@@ -1,0 +1,39 @@
+$ python3 solution.py
+CENTRAL DATABASE (SQLite):
+  (1, 'Issue certificate C-001', 'Registrar')
+  (2, 'Issue certificate C-002', 'Registrar')
+  (3, 'Revoke certificate C-001', 'Registrar')
+  (4, 'Issue certificate C-003', 'Registrar')
+SHARED-COPY EXPERIMENT (a fourth event does not resolve conflicts):
+CONFLICT DETECTED: (2, 'Issue certificate C-002', 'Registrar') versus (2, 'Issue certificate C-999', 'Registrar')
+Audit question: WHO is authorized to decide the correct record?
+PASS: central ledger stored; independently modified copies disagree.
+
+$ ls -lh week01_ledger.sqlite week01_ledger.csv
+-rw-r--r-- 1 claude ubuntu  172 Nov 22 08:36 week01_ledger.csv
+-rw-r--r-- 1 claude ubuntu 8.0K Nov 22 08:36 week01_ledger.sqlite
+
+$ cat week01_ledger.csv
+seq,event,approved_by
+1,Issue certificate C-001,Registrar
+2,Issue certificate C-002,Registrar
+3,Revoke certificate C-001,Registrar
+4,Issue certificate C-003,Registrar
+
+$ python3 solution.py --database alternate.sqlite --export alternate.csv
+CENTRAL DATABASE (SQLite):
+  (1, 'Issue certificate C-001', 'Registrar')
+  (2, 'Issue certificate C-002', 'Registrar')
+  (3, 'Revoke certificate C-001', 'Registrar')
+  (4, 'Issue certificate C-003', 'Registrar')
+SHARED-COPY EXPERIMENT (a fourth event does not resolve conflicts):
+CONFLICT DETECTED: (2, 'Issue certificate C-002', 'Registrar') versus (2, 'Issue certificate C-999', 'Registrar')
+Audit question: WHO is authorized to decide the correct record?
+PASS: central ledger stored; independently modified copies disagree.
+
+$ ls -lh alternate.sqlite alternate.csv
+-rw-r--r-- 1 claude ubuntu  172 Nov 22 08:36 alternate.csv
+-rw-r--r-- 1 claude ubuntu 8.0K Nov 22 08:36 alternate.sqlite
+
+$ sqlite3-style check via python
+[(1, 'Issue certificate C-001', 'Registrar'), (2, 'Issue certificate C-002', 'Registrar'), (3, 'Revoke certificate C-001', 'Registrar'), (4, 'Issue certificate C-003', 'Registrar')]
